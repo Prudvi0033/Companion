@@ -3,8 +3,8 @@ import { prisma } from "../lib/prisma";
 
 export const createEvent = async (c: Context) => {
   try {
-    const user = await c.get("userId");
-    console.log("Token", user);
+    const userId = await c.get("userId");
+    console.log("Token", userId);
     
     const {
       name,
@@ -19,10 +19,11 @@ export const createEvent = async (c: Context) => {
       tags,
     } = await c.req.json();
 
+    // 1️⃣ Create the event
     const event = await prisma.event.create({
       data: {
         name,
-        userId: user,
+        userId,
         description,
         eventImage,
         latitude,
@@ -35,10 +36,24 @@ export const createEvent = async (c: Context) => {
       },
     });
 
+    // 2️⃣ Add the creator as a participant
+    await prisma.participant.create({
+      data: {
+        userId,
+        eventId: event.id,
+      },
+    });
+
+    // 3️⃣ Decrement availableSlots by 1
+    await prisma.event.update({
+      where: { id: event.id },
+      data: { availableSlots: { decrement: 1 } },
+    });
+
     return c.json(
       {
         msg: "Event Created",
-        event
+        event,
       },
       200
     );
@@ -47,6 +62,7 @@ export const createEvent = async (c: Context) => {
     return c.json({ msg: "Internal server error" }, 500);
   }
 };
+
 
 export const editEvent = async (c: Context) => {
   try {
