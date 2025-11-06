@@ -78,6 +78,8 @@ model Participant {
 
   messages  Message[]
   joinedAt  DateTime @default(now())
+
+  @@unique([eventId, userId])
 }
 
 model Message {

@@ -205,3 +205,4 @@ export const getAllEvents = async (c: Context) => {
     return c.json({ msg: "Internal server error" }, 500);
   }
 };
+
