@@ -4,17 +4,14 @@ import { prisma } from "../lib/prisma";
 import bcrypt from "bcryptjs";
 
 const JWT_ACCESS_SECRET = process.env.JWT_ACCESS_SECRET as string;
-const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET as string;
 
 const generateTokens = (userId: string) => {
   const accessToken = jwt.sign({ userId }, JWT_ACCESS_SECRET, {
-    expiresIn: "15m",
-  });
-  const refreshToken = jwt.sign({ userId }, JWT_REFRESH_SECRET, {
     expiresIn: "7d",
   });
+  
 
-  return { accessToken, refreshToken };
+  return accessToken;
 };
 
 export const signUp = async (c: Context) => {
@@ -63,7 +60,7 @@ export const signUp = async (c: Context) => {
       },
     });
 
-    const tokens = generateTokens(user.id);
+    const token = generateTokens(user.id);
 
     return c.json({
       msg: "User created",
@@ -71,7 +68,7 @@ export const signUp = async (c: Context) => {
         name: user.name,
         email: user.email,
       },
-      tokens,
+      token,
     });
   } catch (error) {
     console.error("Signup error:", error);
@@ -118,7 +115,7 @@ export const login = async (c: Context) => {
       );
     }
 
-    const tokens = generateTokens(existingUser.id);
+    const token = generateTokens(existingUser.id);
 
     return c.json({
       msg: "Login sucessfull",
@@ -126,7 +123,7 @@ export const login = async (c: Context) => {
         name: existingUser.name,
         email: existingUser.email,
       },
-      tokens,
+      token,
     });
   } catch (error) {
     console.error("Signup error:", error);
@@ -134,26 +131,6 @@ export const login = async (c: Context) => {
   }
 };
 
-export const refreshToken = async (c: Context) => {
-  try {
-    const refresh = await c.req.json();
-    if (!refresh) {
-      return c.json({ msg: "No refresh token provided" }, 401);
-    }
-
-    const payload = (await jwt.verify(refresh, JWT_REFRESH_SECRET)) as {
-      userId: string;
-    };
-    const tokens = generateTokens(payload.userId);
-
-    return c.json({
-      tokens,
-    });
-  } catch (error) {
-    console.error("Signup error:", error);
-    return c.json({ msg: "Internal server error" }, 500);
-  }
-};
 
 export const logout = (c: Context) => {
   return c.json({

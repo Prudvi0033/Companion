@@ -20,7 +20,7 @@ model User {
   isAdmin   Boolean  @default(false)
   longitude String?
   latitude  String?
-  interests String[]
+  interests Categories[]
   createdAt DateTime @default(now())
 
   // Relations
@@ -34,13 +34,14 @@ model Event {
   id             String   @id @default(cuid())
   name           String
   description    String
-  eventImage     String
+  eventImage     String?
   latitude       String?
   longitude      String?
   dateTime       DateTime
   duration       Int
   totalSlots     Int
   availableSlots Int
+  tags           Categories[]
 
   // Foreign key (creator)
   userId String
@@ -96,4 +97,37 @@ enum Gender {
   male
   female
   other
+}
+
+enum Categories {
+  CINEMA
+  EDUCATION
+  MUSIC
+  SPORTS
+  TECHNOLOGY
+  ART
+  HEALTH
+  FITNESS
+  FOOD
+  TRAVEL
+  GAMING
+  NETWORKING
+  WORKSHOP
+  CONFERENCE
+  CHARITY
+  RELIGION
+  CULTURE
+  DANCE
+  THEATER
+  LITERATURE
+  FASHION
+  SCIENCE
+  ENVIRONMENT
+  POLITICS
+  BUSINESS
+  COMEDY
+  PHOTOGRAPHY
+  FESTIVAL
+  EXHIBITION
+  MEETUP
 }

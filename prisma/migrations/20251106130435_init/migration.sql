@@ -1,14 +1,8 @@
-/*
-  Warnings:
-
-  - You are about to drop the `User` table. If the table is not empty, all the data it contains will be lost.
-
-*/
 -- CreateEnum
 CREATE TYPE "Gender" AS ENUM ('male', 'female', 'other');
 
--- DropTable
-DROP TABLE "User";
+-- CreateEnum
+CREATE TYPE "Categories" AS ENUM ('CINEMA', 'EDUCATION', 'MUSIC', 'SPORTS', 'TECHNOLOGY', 'ART', 'HEALTH', 'FITNESS', 'FOOD', 'TRAVEL', 'GAMING', 'NETWORKING', 'WORKSHOP', 'CONFERENCE', 'CHARITY', 'RELIGION', 'CULTURE', 'DANCE', 'THEATER', 'LITERATURE', 'FASHION', 'SCIENCE', 'ENVIRONMENT', 'POLITICS', 'BUSINESS', 'COMEDY', 'PHOTOGRAPHY', 'FESTIVAL', 'EXHIBITION', 'MEETUP');
 
 -- CreateTable
 CREATE TABLE "users" (
@@ -23,7 +17,7 @@ CREATE TABLE "users" (
     "isAdmin" BOOLEAN NOT NULL DEFAULT false,
     "longitude" TEXT,
     "latitude" TEXT,
-    "interests" TEXT[],
+    "interests" "Categories"[],
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "users_pkey" PRIMARY KEY ("id")
@@ -34,13 +28,14 @@ CREATE TABLE "events" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "description" TEXT NOT NULL,
-    "eventImage" TEXT NOT NULL,
+    "eventImage" TEXT,
     "latitude" TEXT,
     "longitude" TEXT,
     "dateTime" TIMESTAMP(3) NOT NULL,
     "duration" INTEGER NOT NULL,
     "totalSlots" INTEGER NOT NULL,
     "availableSlots" INTEGER NOT NULL,
+    "tags" "Categories"[],
     "userId" TEXT NOT NULL,
 
     CONSTRAINT "events_pkey" PRIMARY KEY ("id")
