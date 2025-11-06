@@ -13,6 +13,8 @@
     "typescript": "^5"
   },
   "dependencies": {
-    "hono": "^4.10.4"
+    "@prisma/client": "^6.19.0",
+    "hono": "^4.10.4",
+    "prisma": "^6.19.0"
   }
 }

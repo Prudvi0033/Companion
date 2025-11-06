@@ -1,0 +1,99 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  password  String
+  userImage String?
+  bio       String?
+  phone     String
+  age       Int
+  isAdmin   Boolean  @default(false)
+  longitude String?
+  latitude  String?
+  interests String[]
+  createdAt DateTime @default(now())
+
+  // Relations
+  events        Event[]        // Events created by this user
+  participants  Participant[]  // Events the user has joined
+
+  @@map("users")
+}
+
+model Event {
+  id             String   @id @default(cuid())
+  name           String
+  description    String
+  eventImage     String
+  latitude       String?
+  longitude      String?
+  dateTime       DateTime
+  duration       Int
+  totalSlots     Int
+  availableSlots Int
+
+  // Foreign key (creator)
+  userId String
+  user   User @relation(fields: [userId], references: [id])
+
+  // Relations (no onDelete here)
+  slots         Slot[]
+  participants  Participant[]
+  messages      Message[]
+
+  @@map("events")
+}
+
+model Slot {
+  id      String  @id @default(cuid())
+  type    String?
+  age     String
+  gender  Gender
+
+  eventId String
+  event   Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+}
+
+model Participant {
+  id        String   @id @default(cuid())
+
+  // The user who joined
+  userId    String
+  user      User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // The event they joined
+  eventId   String
+  event     Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  messages  Message[]
+  joinedAt  DateTime @default(now())
+}
+
+model Message {
+  id             String       @id @default(cuid())
+  content        String
+  createdAt      DateTime     @default(now())
+
+  // Foreign keys
+  participantId  String
+  participant    Participant  @relation(fields: [participantId], references: [id], onDelete: Cascade)
+
+  eventId        String
+  event          Event        @relation(fields: [eventId], references: [id], onDelete: Cascade)
+}
+
+enum Gender {
+  male
+  female
+  other
+}
